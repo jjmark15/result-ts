@@ -3,6 +3,24 @@ import {
   unwrapOr,
 } from "https://raw.githubusercontent.com/jjmark15/optional-utils-ts/v0.2.0/mod.ts";
 
+enum IllegalResultAccessSubject {
+  Value = "value",
+  Error = "error",
+}
+
+export class IllegalResultAccessError extends Error {
+  constructor(accessSubject: IllegalResultAccessSubject) {
+    super(IllegalResultAccessError.errorMessage(accessSubject));
+  }
+
+  private static errorMessage(
+    accessSubject: IllegalResultAccessSubject,
+  ): string {
+    return "Attempted to access result " + accessSubject +
+      " but it does not exist";
+  }
+}
+
 export default class Result<T, E extends Error> {
   private readonly _value?: T;
   private readonly _error?: E;
@@ -28,8 +46,12 @@ export default class Result<T, E extends Error> {
     return !this.isOk();
   }
 
-  public unwrap(): T | undefined {
-    return this._value;
+  public unwrap(): T | never {
+    if (this._value !== undefined) {
+      return this._value;
+    } else {
+      throw new IllegalResultAccessError(IllegalResultAccessSubject.Value);
+    }
   }
 
   public unwrapOr(defaultValue: T): T {
@@ -53,8 +75,12 @@ export default class Result<T, E extends Error> {
     }
   }
 
-  public unwrapErr(): Error | undefined {
-    return this._error;
+  public unwrapErr(): Error | never {
+    if (this._error !== undefined) {
+      return this._error;
+    } else {
+      throw new IllegalResultAccessError(IllegalResultAccessSubject.Error);
+    }
   }
 
   public throwIfErr(): void | never {

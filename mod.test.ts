@@ -3,7 +3,7 @@ import {
   assertEquals,
   assertThrows,
 } from "https://deno.land/std@0.91.0/testing/asserts.ts";
-import Result from "./mod.ts";
+import Result, { IllegalResultAccessError } from "./mod.ts";
 
 const VALUE = "value";
 const DEFAULT_VALUE = "default value";
@@ -31,8 +31,13 @@ Deno.test("unwrap returns value when the Result is ok", () => {
   assertEquals(OK.unwrap(), VALUE);
 });
 
-Deno.test("unwrap returns undefined when the Result is err", () => {
-  assertEquals(ERR.unwrap(), undefined);
+Deno.test("unwrap throws when the Result is err", () => {
+  assertThrows(
+    () => ERR.unwrap(),
+    IllegalResultAccessError,
+    undefined,
+    "Attempted to access result value but it does not exist",
+  );
 });
 
 Deno.test("unwrapOr returns value when the Result is ok", () => {
@@ -55,8 +60,13 @@ Deno.test("unwrapErr returns error when the Result is err", () => {
   assertEquals(ERR.unwrapErr(), ERROR);
 });
 
-Deno.test("unwrapErr returns undefined when the Result is ok", () => {
-  assertEquals(OK.unwrapErr(), undefined);
+Deno.test("unwrapErr throws when the Result is ok", () => {
+  assertThrows(
+    () => OK.unwrapErr(),
+    IllegalResultAccessError,
+    undefined,
+    "Attempted to access result error but it does not exist",
+  );
 });
 
 Deno.test("throwIfErr throws if there is an error", () => {
