@@ -1,8 +1,3 @@
-import {
-  okOr,
-  unwrapOr,
-} from "https://raw.githubusercontent.com/jjmark15/optional-utils-ts/v0.2.0/mod.ts";
-
 enum IllegalResultAccessSubject {
   Value = "value",
   Error = "error",
@@ -63,24 +58,11 @@ export default class Result<T, E extends Error> {
   }
 
   public unwrapOr(defaultValue: T): T {
-    if (this.isOk()) {
-      return unwrapOr(this._value, defaultValue);
-    } else {
-      return defaultValue;
-    }
+    return this.isOk() ? this.unwrap() : defaultValue;
   }
 
   public unwrapOrElse(f: () => T): T {
-    if (this.isOk()) {
-      return okOr(
-        this._value,
-        new Error(
-          "Internal Result error: value is undefined when Result is ok",
-        ),
-      );
-    } else {
-      return f();
-    }
+    return this.isOk() ? this.unwrap() : f();
   }
 
   public unwrapErr(): Error | never {
