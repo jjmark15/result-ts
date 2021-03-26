@@ -3,7 +3,11 @@ import {
   assertEquals,
   assertThrows,
 } from "https://deno.land/std@0.91.0/testing/asserts.ts";
-import Result, { catchInResult, IllegalResultAccessError } from "./mod.ts";
+import Result, {
+  catchInResult,
+  IllegalResultAccessError,
+  ResultState,
+} from "./mod.ts";
 
 const VALUE = "value";
 const DEFAULT_VALUE = "default value";
@@ -90,4 +94,12 @@ Deno.test("wraps returned values in a Result", () => {
   const result = catchInResult(() => VALUE);
 
   assertEquals(result.unwrap(), VALUE);
+});
+
+Deno.test("returns Ok result state when ok", () => {
+  assertEquals(OK.state(), ResultState.Ok);
+});
+
+Deno.test("returns Err result state when err", () => {
+  assertEquals(ERR.state(), ResultState.Err);
 });
