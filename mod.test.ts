@@ -1,6 +1,7 @@
 import {
   assert,
   assertEquals,
+  assertThrows,
 } from "https://deno.land/std@0.91.0/testing/asserts.ts";
 import Result from "./mod.ts";
 
@@ -56,4 +57,12 @@ Deno.test("unwrapErr returns error when the Result is err", () => {
 
 Deno.test("unwrapErr returns undefined when the Result is ok", () => {
   assertEquals(OK.unwrapErr(), undefined);
+});
+
+Deno.test("throwIfErr throws if there is an error", () => {
+  assertThrows(() => ERR.throwIfErr(), Error);
+});
+
+Deno.test("throwIfErr does nothing if there is no error", () => {
+  OK.throwIfErr();
 });

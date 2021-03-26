@@ -56,6 +56,12 @@ export default class Result<T, E extends Error> {
   public unwrapErr(): Error | undefined {
     return this._error;
   }
+
+  public throwIfErr(): void | never {
+    if (this._error !== undefined) {
+      throw this._error;
+    }
+  }
 }
 
 interface ISupplier<T> {
