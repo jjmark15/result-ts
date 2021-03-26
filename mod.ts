@@ -62,7 +62,7 @@ export default class Result<T, E extends Error> {
     }
   }
 
-  public unwrapOrElse(f: ISupplier<T>): T {
+  public unwrapOrElse(f: () => T): T {
     if (this.isOk()) {
       return okOr(
         this._value,
@@ -88,8 +88,4 @@ export default class Result<T, E extends Error> {
       throw this._error;
     }
   }
-}
-
-interface ISupplier<T> {
-  (): T;
 }
