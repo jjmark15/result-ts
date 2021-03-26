@@ -8,6 +8,14 @@ enum IllegalResultAccessSubject {
   Error = "error",
 }
 
+export function catchInResult<T, E extends Error>(f: () => T): Result<T, E> {
+  try {
+    return Result.ok(f());
+  } catch (error) {
+    return Result.err(error);
+  }
+}
+
 export class IllegalResultAccessError extends Error {
   constructor(accessSubject: IllegalResultAccessSubject) {
     super(IllegalResultAccessError.errorMessage(accessSubject));
