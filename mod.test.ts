@@ -3,11 +3,12 @@ import {
   assertEquals,
   assertThrows,
 } from "https://deno.land/std@0.91.0/testing/asserts.ts";
-import Result, { IllegalResultAccessError } from "./mod.ts";
+import Result, { catchInResult, IllegalResultAccessError } from "./mod.ts";
 
 const VALUE = "value";
 const DEFAULT_VALUE = "default value";
-const ERROR = new Error();
+const ERROR_MESSAGE = "error message";
+const ERROR = new Error(ERROR_MESSAGE);
 const OK = Result.ok(VALUE);
 const ERR = Result.err(ERROR);
 
@@ -75,4 +76,18 @@ Deno.test("throwIfErr throws if there is an error", () => {
 
 Deno.test("throwIfErr does nothing if there is no error", () => {
   OK.throwIfErr();
+});
+
+Deno.test("wraps thrown errors in a Result", () => {
+  const result = catchInResult(() => {
+    throw ERROR;
+  });
+
+  assertEquals(result.unwrapErr().message, ERROR_MESSAGE);
+});
+
+Deno.test("wraps returned values in a Result", () => {
+  const result = catchInResult(() => VALUE);
+
+  assertEquals(result.unwrap(), VALUE);
 });
