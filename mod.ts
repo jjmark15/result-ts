@@ -29,12 +29,6 @@ export class IllegalResultAccessError extends Error {
   }
 }
 
-export class IllegalResultStateError extends Error {
-  constructor() {
-    super("Result value was undefined while error was also undefined");
-  }
-}
-
 export class Result<T, E extends Error> {
   private readonly _value?: T;
   private readonly _error?: E;
