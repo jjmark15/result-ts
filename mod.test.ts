@@ -3,10 +3,11 @@ import {
   assertEquals,
   assertThrows,
 } from "https://deno.land/std@0.91.0/testing/asserts.ts";
-import Result, {
+import {
+  Result,
   catchInResult,
   IllegalResultAccessError,
-  ResultState,
+  ResultType,
 } from "./mod.ts";
 
 const VALUE = "value";
@@ -39,7 +40,7 @@ Deno.test("unwrap returns value when the Result is ok", () => {
 Deno.test("unwrap throws when the Result is err", () => {
   assertThrows(
     () => ERR.unwrap(),
-    IllegalResultAccessError,
+    Error,
     undefined,
     "Attempted to access result value but it does not exist",
   );
@@ -74,14 +75,6 @@ Deno.test("unwrapErr throws when the Result is ok", () => {
   );
 });
 
-Deno.test("throwIfErr throws if there is an error", () => {
-  assertThrows(() => ERR.throwIfErr(), Error);
-});
-
-Deno.test("throwIfErr does nothing if there is no error", () => {
-  OK.throwIfErr();
-});
-
 Deno.test("wraps thrown errors in a Result", () => {
   const result = catchInResult(() => {
     throw ERROR;
@@ -97,9 +90,9 @@ Deno.test("wraps returned values in a Result", () => {
 });
 
 Deno.test("returns Ok result state when ok", () => {
-  assertEquals(OK.state(), ResultState.Ok);
+  assertEquals(OK.state(), ResultType.Ok);
 });
 
 Deno.test("returns Err result state when err", () => {
-  assertEquals(ERR.state(), ResultState.Err);
+  assertEquals(ERR.state(), ResultType.Err);
 });

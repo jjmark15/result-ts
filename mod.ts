@@ -3,7 +3,7 @@ enum IllegalResultAccessSubject {
   Error = "error",
 }
 
-export enum ResultState {
+export enum ResultType {
   Ok,
   Err,
 }
@@ -29,23 +29,29 @@ export class IllegalResultAccessError extends Error {
   }
 }
 
-export default class Result<T, E extends Error> {
+export class IllegalResultStateError extends Error {
+  constructor() {
+    super("Result value was undefined while error was also undefined");
+  }
+}
+
+export class Result<T, E extends Error> {
   private readonly _value?: T;
   private readonly _error?: E;
-  private readonly _resultState: ResultState;
+  private readonly _resultType: ResultType;
 
-  private constructor(resultState: ResultState, value?: T, error?: E) {
+  protected constructor(resultType: ResultType, value?: T, error?: E) {
     this._value = value;
     this._error = error;
-    this._resultState = resultState;
+    this._resultType = resultType;
   }
 
   public static ok<T, E extends Error>(value: T): Result<T, E> {
-    return new Result<T, E>(ResultState.Ok, value, undefined);
+    return new Result<T, E>(ResultType.Ok, value, undefined);
   }
 
   public static err<T, E extends Error>(error: E): Result<T, E> {
-    return new Result<T, E>(ResultState.Err, undefined, error);
+    return new Result<T, E>(ResultType.Err, undefined, error);
   }
 
   public isOk(): boolean {
@@ -57,10 +63,14 @@ export default class Result<T, E extends Error> {
   }
 
   public unwrap(): T | never {
-    if (this._value !== undefined) {
-      return this._value;
+    if (this._error === undefined) {
+      if (this._value !== undefined) {
+        return this._value;
+      } else {
+        throw new IllegalResultStateError();
+      }
     } else {
-      throw new IllegalResultAccessError(IllegalResultAccessSubject.Value);
+      throw this._error;
     }
   }
 
@@ -80,13 +90,7 @@ export default class Result<T, E extends Error> {
     }
   }
 
-  public throwIfErr(): void | never {
-    if (this._error !== undefined) {
-      throw this._error;
-    }
-  }
-
-  public state(): ResultState {
-    return this._resultState;
+  public state(): ResultType {
+    return this._resultType;
   }
 }
