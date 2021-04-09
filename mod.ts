@@ -64,11 +64,8 @@ export class Result<T, E extends Error> {
 
   public unwrap(): T | never {
     if (this._error === undefined) {
-      if (this._value !== undefined) {
-        return this._value;
-      } else {
-        throw new IllegalResultStateError();
-      }
+      // @ts-ignore as here T can be of type void
+      return this._value;
     } else {
       throw this._error;
     }

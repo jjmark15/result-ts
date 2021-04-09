@@ -4,9 +4,9 @@ import {
   assertThrows,
 } from "https://deno.land/std@0.91.0/testing/asserts.ts";
 import {
-  Result,
   catchInResult,
   IllegalResultAccessError,
+  Result,
   ResultType,
 } from "./mod.ts";
 
@@ -35,6 +35,11 @@ Deno.test("result is not err when the result is not an error", () => {
 
 Deno.test("unwrap returns value when the Result is ok", () => {
   assertEquals(OK.unwrap(), VALUE);
+});
+
+Deno.test("unwrap returns undefined when the Result value is undefined", () => {
+  const voidResult: Result<void, Error> = Result.ok(undefined);
+  assertEquals(voidResult.unwrap(), undefined);
 });
 
 Deno.test("unwrap throws when the Result is err", () => {
